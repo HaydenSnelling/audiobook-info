@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Initialize total audio length variable at 0 seconds
+total_audio_length=0
+
+# Loop through all files in the current directory that are wav or mp3
+for file in *.wav *.mp3; do
+    # Get the duration of the current audio file using ffprobe
+    duration=$(ffprobe -i "$file" -show_entries format=duration -v quiet -of csv="p=0")
+
+    # Round the duration to the nearest second (optional, remove if not needed)
+    duration=$(printf "%.0f" "$duration")
+
+    # Add the duration to the total audio length
+    total_audio_length=$((total_audio_length + duration))
+
+    # Append the result to info.txt in the format: name_of_current_file|total_audio_length
+    echo "${file}|$total_audio_length" >> info.txt
+done
+
+sed -i '1d' info.txt  # Removes the first line using sed
+echo "Total audio length: $total_audio_length seconds"
+
