@@ -4,7 +4,7 @@
 total_audio_length=0
 
 # Loop through all files in the current directory that are wav or mp3
-for file in *.wav *.mp3; do
+for file in *.m4a *.wav *.mp3; do
     # Get the duration of the current audio file using ffprobe
     duration=$(ffprobe -i "$file" -show_entries format=duration -v quiet -of csv="p=0")
 
@@ -18,6 +18,15 @@ for file in *.wav *.mp3; do
     echo "${file}|$total_audio_length" >> info.txt
 done
 
-sed -i '1d' info.txt  # Removes the first line using sed
-echo "Total audio length: $total_audio_length seconds"
+#sed -i '1d' info.txt  # Removes the first line using sed
+#echo "Total audio length: $total_audio_length seconds"
 
+
+# Check if the script was run with the -m flag
+if [[ "$1" == "-m" ]]; then
+    echo "Total audio length: $total_audio_length seconds"
+else
+    # Remove the first line from info.txt (except when -m flag is used)
+    sed -i '1d' info.txt
+    echo "Total audio length: $total_audio_length seconds (details in info.txt)"
+fi
